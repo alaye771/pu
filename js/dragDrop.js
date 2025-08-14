@@ -1,96 +1,114 @@
-import PositionElements from './positionElements.js'
+import PositionElements from './positionElements.js';
 
 class DragDrop {
-	constructor() {
-		this.positionElements = new PositionElements() 
-		this.selected = 0
-		this.dragDropEvents()
-		this.points = {correct: 0, wrong: 0}
-		this.imageChange();
-	}
-	dragDropEvents() {
-	const { draggableDivs, puzzleDivs, modal, modalText, modalBtn, attempt, cellsAmount } = this.positionElements.elements;
+    constructor() {
+        this.positionElements = new PositionElements();
+        this.selected = null;
+        this.points = { correct: 0, wrong: 0 };
 
-	draggableDivs.forEach((draggableDiv, i) => {
-		draggableDiv.addEventListener('dragstart', (e) => {
-			this.selected = e.target;
-			console.log('dragstart');
-		});
+        this.dragDropEvents();
+        this.imageChange();
+    }
 
-		puzzleDivs[i].addEventListener('dragover', (e) => {
-			e.preventDefault();
-			console.log('dragover');
-		});
+    // ---------------------------
+    // ÉVÉNEMENTS DRAG & DROP
+    // ---------------------------
+    dragDropEvents() {
+        const { draggableDivs, puzzleDivs } = this.positionElements.elements;
 
-		puzzleDivs[i].addEventListener('drop', () => {
-			if (puzzleDivs[i].children.length === 0) {
-				this.selected.style.top = '0';
-				this.selected.style.left = '0';
-				this.selected.style.border = 'none'; 
-				puzzleDivs[i].append(this.selected);
+        draggableDivs.forEach((draggableDiv, i) => {
+            draggableDiv.addEventListener('dragstart', (e) => this.onDragStart(e));
+            puzzleDivs[i].addEventListener('dragover', (e) => this.onDragOver(e));
+            puzzleDivs[i].addEventListener('drop', () => this.onDrop(i));
+            puzzleDivs[i].addEventListener('dragenter', () => puzzleDivs[i].classList.add("active"));
+            puzzleDivs[i].addEventListener('dragleave', () => puzzleDivs[i].classList.remove("active"));
+        });
+    }
 
-	if (this.selected.dataset.index === puzzleDivs[i].dataset.index) {
-	this.points.correct = 0;
-	this.points.wrong = 0;
+    onDragStart(e) {
+        this.selected = e.target;
+    }
 
-	puzzleDivs.forEach((div) => {
-		const child = div.firstElementChild;
+    onDragOver(e) {
+        e.preventDefault(); // Autorise le drop
+    }
 
-		if (child && div.dataset.index === child.dataset.index) {
-			this.points.correct++;
-		} else {
-			this.points.wrong++;
-		}
-	});
+    onDrop(index) {
+        const { puzzleDivs } = this.positionElements.elements;
 
-	console.log(this.points);
+        // Si la case est vide
+        if (puzzleDivs[index].children.length === 0) {
+            this.selected.style.top = '0';
+            this.selected.style.left = '0';
+            this.selected.style.border = 'none';
+            puzzleDivs[index].append(this.selected);
 
-	if (this.points.correct === cellsAmount) {
-	modal.style.opacity = "1";
-	modal.style.visibility = "visible";
-	attempt.textContent = this.points.wrong;
-	modalBtn.onclick = () => location.reload();
+            // Vérifie victoire/défaite
+            this.checkGameState();
+        }
+    }
+
+    // ---------------------------
+    // VÉRIFICATION ÉTAT DU JEU
+    // ---------------------------
+    checkGameState() {
+        const { puzzleDivs, modal, modalText, modalBtn, attempt, cellsAmount } = this.positionElements.elements;
+
+        // Reset points
+        this.points.correct = 0;
+        this.points.wrong = 0;
+
+        // Compte corrects et faux
+        puzzleDivs.forEach((div) => {
+            const child = div.firstElementChild;
+            if (child && div.dataset.index === child.dataset.index) {
+                this.points.correct++;
+            } else {
+                this.points.wrong++;
+            }
+        });
+
+        // Victoire
+        if (this.points.correct === cellsAmount) {
+            this.showModal(modal, attempt, modalBtn, `You Won! Wrong Attempts: ${this.points.wrong}`);
+            return;
+        }
+
+        // Défaite
+        const foundEmpty = puzzleDivs.find((div) => !div.firstElementChild);
+        if (!foundEmpty && this.points.correct < cellsAmount) {
+            this.showModal(modal, modalText, modalBtn, "You Lost. Please Try Again");
+        }
+    }
+
+    // ---------------------------
+    // AFFICHAGE DU MODAL
+    // ---------------------------
+    showModal(modal, textElement, modalBtn, message) {
+        modal.style.opacity = "1";
+        modal.style.visibility = "visible";
+
+        if (textElement) textElement.textContent = message;
+        modalBtn.onclick = () => location.reload();
+    }
+
+    // ---------------------------
+    // CHANGEMENT D'IMAGE
+    // ---------------------------
+    imageChange() {
+        const { finalImg, inputFile, draggableDivs } = this.positionElements.elements;
+
+        inputFile.addEventListener("change", () => {
+            const url = URL.createObjectURL(inputFile.files[0]);
+
+            finalImg.style.backgroundImage = `url(${url})`;
+            draggableDivs.forEach((div) => {
+                div.style.backgroundImage = `url(${url})`;
+            });
+
+            this.points = { correct: 0, wrong: 0 };
+        });
+    }
 }
 
-const found = puzzleDivs.find((div) => !div.firstElementChild);
-
-if (!found && this.points.correct < cellsAmount) {
-	modal.style.opacity = "1";
-	modal.style.visibility = "visible";
-	modalText.textContent = "You Lost. Please Try Again";
-	modalBtn.onclick = () => location.reload();
-}
-
-} 
-}
-puzzleDivs[i].addEventListener("dragenter", (e) => {
-	puzzleDivs[i].classList.add("active");
-});
-
-puzzleDivs[i].addEventListener("dragleave", (e) => {
-	console.log("leave");
-	puzzleDivs[i].classList.remove("active");
-});
-}) 
-}) 
-}
-
-imageChange() {
-	const { finalImg, inputFile, draggableDivs } = this.positionElements.elements;
-
-	inputFile.addEventListener("change", (e) => {
-		const url = URL.createObjectURL(inputFile.files[0]);
-
-		finalImg.style.backgroundImage = `url(${url})`;
-
-		draggableDivs.forEach((div) => {
-			div.style.backgroundImage = `url(${url})`;
-		});
-
-		this.points = { correct: 0, wrong: 0 };
-	});
-}
-
- }  
-
-export default DragDrop
+export default DragDrop;
