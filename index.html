@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859091246952232"
-     crossorigin="anonymous"></script>
-     <meta name="google-adsense-account" content="ca-pub-3859091246952232">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <script src="script.js" defer type="module"></script>
   <title>Puzzle Game</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859091246952232"
+     crossorigin="anonymous"></script>
+     <meta name="google-adsense-account" content="ca-pub-3859091246952232">
+     <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3859091246952232"
+     crossorigin="anonymous"></script>
 </head>
 <body>
+  <amp-auto-ads type="adsense"
+        data-ad-client="ca-pub-3859091246952232">
+</amp-auto-ads>
   <div class="container">
     <div class="puzzle-wrapper">
       <div class="cells"></div>
@@ -19,28 +27,29 @@
       <div class="final-img">
         <div class="upload-img">
           <div class="btns">
-            <button class="img-btn btn random-btn">Get Random Image  (Obtenir une image aléatoire)</button>
+            
+            <label for="input-file" class="img-btn btn">TELECHARGER UNE NOUVELLE IMAGE</label>
           </div>
-          <input type="file" accept="image/*" id="input-file" />
+
+          <!-- input bien écrit ici -->
+          <input type="file" accept="image/jpeg, image/png, image/jpg" id="input-file" />
         </div>
       </div>
     </div>
   </div>
-
-  <div class="modal">
-    <div class="modal-content">
-      <h2 class="modal-heading">Game Over</h2>
-      <h3 class="modal-text">
-        YOU WON. <span class="attempt">5</span> wrong attempts
-      </h3>
-      <button class="modal-btn btn">Start Again</button>
-    </div>
+<div class="modal">
+  <div class="modal-content">
+    <h2 class="modal-heading">Game Over</h2>
+    <h3 class="modal-text">
+      YOU WON. <span class="attempt">5</span> wrong attempts
+    </h3>
+    <button class="modal-btn btn">Start Again</button>
   </div>
-
-  <div class="loader action">
-    <img src="images/loader.gif" alt="Loading..." />
-  </div>
-
-  <h1 class="heading">Puzzle Quess 2</h1>
+</div>
+<div class="loader action">
+    <img src="images/loader.gif" />
+</div>
+  <h1 class="heading">PUZZLE QUESS BETA</h1>
+</div>
 </body>
 </html>
