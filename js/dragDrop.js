@@ -16,12 +16,21 @@ class DragDrop {
     dragDropEvents() {
         const { draggableDivs, puzzleDivs } = this.positionElements.elements;
 
-        draggableDivs.forEach((draggableDiv, i) => {
+        draggableDivs.forEach(draggableDiv => {
             draggableDiv.addEventListener('dragstart', (e) => this.onDragStart(e));
-            puzzleDivs[i].addEventListener('dragover', (e) => this.onDragOver(e));
-            puzzleDivs[i].addEventListener('drop', () => this.onDrop(i));
-            puzzleDivs[i].addEventListener('dragenter', () => puzzleDivs[i].classList.add("active"));
-            puzzleDivs[i].addEventListener('dragleave', () => puzzleDivs[i].classList.remove("active"));
+        });
+
+        puzzleDivs.forEach((puzzleDiv, i) => {
+            puzzleDiv.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+            puzzleDiv.addEventListener('drop', () => {
+                puzzleDiv.classList.remove("active");
+                this.onDrop(i);
+            });
+            puzzleDiv.addEventListener('dragenter', () => puzzleDiv.classList.add("active"));
+            puzzleDiv.addEventListener('dragleave', () => puzzleDiv.classList.remove("active"));
         });
     }
 
@@ -29,21 +38,23 @@ class DragDrop {
         this.selected = e.target;
     }
 
-    onDragOver(e) {
-        e.preventDefault(); // Autorise le drop
-    }
-
     onDrop(index) {
         const { puzzleDivs } = this.positionElements.elements;
 
-        // Si la case est vide
         if (puzzleDivs[index].children.length === 0) {
             this.selected.style.top = '0';
             this.selected.style.left = '0';
             this.selected.style.border = 'none';
             puzzleDivs[index].append(this.selected);
 
-            // Vérifie victoire/défaite
+            if (Number(this.selected.dataset.index) === index) {
+                this.points.correct++;
+                this.selected.classList.add("correct-piece");
+            } else {
+                this.points.wrong++;
+                this.selected.classList.add("wrong-piece");
+            }
+
             this.checkGameState();
         }
     }
@@ -52,32 +63,27 @@ class DragDrop {
     // VÉRIFICATION ÉTAT DU JEU
     // ---------------------------
     checkGameState() {
-        const { puzzleDivs, modal, modalText, modalBtn, attempt, cellsAmount } = this.positionElements.elements;
+        const { puzzleDivs, modal, modalText, modalBtn, cellsAmount } = this.positionElements.elements;
 
-        // Reset points
-        this.points.correct = 0;
-        this.points.wrong = 0;
-
-        // Compte corrects et faux
-        puzzleDivs.forEach((div) => {
-            const child = div.firstElementChild;
-            if (child && div.dataset.index === child.dataset.index) {
-                this.points.correct++;
-            } else {
-                this.points.wrong++;
-            }
-        });
-
-        // Victoire
+        // ✅ Victoire
         if (this.points.correct === cellsAmount) {
-            this.showModal(modal, attempt, modalBtn, `You Won! Wrong Attempts: ${this.points.wrong}`);
+            this.showModal(
+                modal,
+                modalText,
+                modalBtn,
+                `🎉 VICTOIRE ! 🎉\n\nBravo, vous avez terminé le puzzle.\n\n✅ Pièces correctes : ${this.points.correct}\n❌ Erreurs : ${this.points.wrong}`
+            );
             return;
         }
 
-        // Défaite
-        const foundEmpty = puzzleDivs.find((div) => !div.firstElementChild);
-        if (!foundEmpty && this.points.correct < cellsAmount) {
-            this.showModal(modal, modalText, modalBtn, "You Lost. Please Try Again");
+        // ❌ Défaite
+        if (!puzzleDivs.some(div => !div.firstElementChild) && this.points.correct < cellsAmount) {
+            this.showModal(
+                modal,
+                modalText,
+                modalBtn,
+                `😢 DÉFAITE 😢\n\nLe puzzle est terminé, mais certaines pièces ne sont pas à leur place.\n\n✅ Pièces correctes : ${this.points.correct}\n❌ Erreurs : ${this.points.wrong}\n\nCliquez sur "Rejouer" pour recommencer.`
+            );
         }
     }
 
@@ -88,7 +94,13 @@ class DragDrop {
         modal.style.opacity = "1";
         modal.style.visibility = "visible";
 
-        if (textElement) textElement.textContent = message;
+        if (textElement) {
+            textElement.textContent = message;
+            textElement.classList.add("modal-animate");
+        }
+
+        // ✅ Le bouton devient "Rejouer" et recharge la page
+        modalBtn.textContent = "🔄 Rejouer";
         modalBtn.onclick = () => location.reload();
     }
 
@@ -102,7 +114,7 @@ class DragDrop {
             const url = URL.createObjectURL(inputFile.files[0]);
 
             finalImg.style.backgroundImage = `url(${url})`;
-            draggableDivs.forEach((div) => {
+            draggableDivs.forEach(div => {
                 div.style.backgroundImage = `url(${url})`;
             });
 
