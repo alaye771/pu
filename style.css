@@ -209,3 +209,70 @@ html {
 	text-transform: uppercase;
 }
 
+/* Titres */
+.victory-title {
+    color: #4caf50;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.defeat-title {
+    color: #f44336;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Boutons rejouer */
+.modal-btn {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+
+.victory-btn {
+    background: #4caf50;
+    color: white;
+}
+
+.victory-btn:hover {
+    background: #43a047;
+}
+
+.defeat-btn {
+    background: #f44336;
+    color: white;
+}
+
+.defeat-btn:hover {
+    background: #e53935;
+}
+
+/* Animation modal */
+.modal-animate {
+    animation: zoomFade 0.8s ease forwards;
+    white-space: normal;
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+@keyframes zoomFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
