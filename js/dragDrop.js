@@ -71,7 +71,11 @@ class DragDrop {
                 modal,
                 modalText,
                 modalBtn,
-                `🎉 VICTOIRE ! 🎉\n\nBravo, vous avez terminé le puzzle.\n\n✅ Pièces correctes : ${this.points.correct}\n❌ Erreurs : ${this.points.wrong}`
+                `<h2 class="victory-title">🎉 VICTOIRE ! 🎉</h2>
+                 <p>Bravo, vous avez terminé le puzzle.</p>
+                 <p>✅ Pièces correctes : <strong>${this.points.correct}</strong></p>
+                 <p>❌ Erreurs : <strong>${this.points.wrong}</strong></p>`,
+                "victory"
             );
             return;
         }
@@ -82,7 +86,12 @@ class DragDrop {
                 modal,
                 modalText,
                 modalBtn,
-                `😢 DÉFAITE 😢\n\nLe puzzle est terminé, mais certaines pièces ne sont pas à leur place.\n\n✅ Pièces correctes : ${this.points.correct}\n❌ Erreurs : ${this.points.wrong}\n\nCliquez sur "Rejouer" pour recommencer.`
+                `<h2 class="defeat-title">😢 DÉFAITE 😢</h2>
+                 <p>Le puzzle est terminé, mais certaines pièces ne sont pas à leur place.</p>
+                 <p>✅ Pièces correctes : <strong>${this.points.correct}</strong></p>
+                 <p>❌ Erreurs : <strong>${this.points.wrong}</strong></p>
+                 <p>👉 Cliquez sur "Rejouer" pour recommencer.</p>`,
+                "defeat"
             );
         }
     }
@@ -90,17 +99,24 @@ class DragDrop {
     // ---------------------------
     // AFFICHAGE DU MODAL
     // ---------------------------
-    showModal(modal, textElement, modalBtn, message) {
+    showModal(modal, textElement, modalBtn, message, state) {
         modal.style.opacity = "1";
         modal.style.visibility = "visible";
 
         if (textElement) {
-            textElement.textContent = message;
+            textElement.innerHTML = message; // ✅ permet d'injecter HTML stylé
             textElement.classList.add("modal-animate");
         }
 
-        // ✅ Le bouton devient "Rejouer" et recharge la page
+        // ✅ Le bouton devient "Rejouer"
         modalBtn.textContent = "🔄 Rejouer";
+
+        if (state === "victory") {
+            modalBtn.className = "modal-btn victory-btn";
+        } else {
+            modalBtn.className = "modal-btn defeat-btn";
+        }
+
         modalBtn.onclick = () => location.reload();
     }
 
