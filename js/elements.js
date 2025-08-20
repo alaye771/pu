@@ -10,7 +10,8 @@ class Elements {
         this.modalBtn = document.querySelector('.modal-btn');
         this.attempt = document.querySelector('.attempt');
 		this.finalImg = document.querySelector('.final-img');
-        this.inputFile = document.getElementById('input-file'); 
+        this.inputFile = document.getElementById('input-file');	
+		this.loader = document.querySelector('.loader');
         this.createElements()
      }
 
